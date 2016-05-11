@@ -17,7 +17,7 @@ public class ParkLE extends Application {
     protected static final long ALARM_INTERVAL = 20*1000;
     protected static final long SCAN_PERIOD = 2*1000;
 
-    protected static final String INTENT_ACTION_CHECK_BEACON = "com.parklive.parklive.CHECK_BEACON";
+    protected static final String INTENT_ACTION_CHECK_BEACON = "edu.parkle.CHECK_BEACON";
 
     @Override
     public void onCreate() {

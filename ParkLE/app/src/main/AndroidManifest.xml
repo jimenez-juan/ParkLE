@@ -26,7 +26,7 @@
 
         <receiver android:name=".BeaconWakefulReceiver">
             <intent-filter>
-                <action android:name="com.parklive.parklive.CHECK_BEACON" />
+                <action android:name="edu.parkle.CHECK_BEACON" />
             </intent-filter>
         </receiver>
 
