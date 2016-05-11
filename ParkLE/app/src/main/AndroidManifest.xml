@@ -2,23 +2,50 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.stanford.parkle">
 
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".MyApp"
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
+<<<<<<< HEAD
         android:theme="@style/AppTheme">
         <activity android:name=".LoginActivity">
+=======
+        android:theme="@style/AppTheme"
+        android:name=".ParkLE">
+        <activity android:name=".LoginActivity" >
+>>>>>>> 5b944e935892af2e62b3c225e0855b46597ac5a6
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MapActivity"></activity>
+=======
+        <activity android:name=".RegisterActivity"></activity>
+
+        <receiver android:name=".BeaconWakefulReceiver">
+            <intent-filter>
+                <action android:name="com.parklive.parklive.CHECK_BEACON" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".FindBeaconService"
+            android:exported="false">
+        </service>
+
+>>>>>>> 5b944e935892af2e62b3c225e0855b46597ac5a6
     </application>
 
 </manifest>
