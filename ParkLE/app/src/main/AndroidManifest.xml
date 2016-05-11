@@ -10,33 +10,24 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".MyApp"
+        android:name=".ParkLE"
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-<<<<<<< HEAD
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
-=======
-        android:theme="@style/AppTheme"
-        android:name=".ParkLE">
         <activity android:name=".LoginActivity" >
->>>>>>> 5b944e935892af2e62b3c225e0855b46597ac5a6
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
         <activity android:name=".RegisterActivity" />
+
         <activity android:name=".MapActivity"></activity>
-=======
-        <activity android:name=".RegisterActivity"></activity>
 
         <receiver android:name=".BeaconWakefulReceiver">
             <intent-filter>
-                <action android:name="com.parklive.parklive.CHECK_BEACON" />
+                <action android:name="edu.parkle.CHECK_BEACON" />
             </intent-filter>
         </receiver>
 
@@ -45,7 +36,6 @@
             android:exported="false">
         </service>
 
->>>>>>> 5b944e935892af2e62b3c225e0855b46597ac5a6
     </application>
 
 </manifest>
