@@ -23,11 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog mAuthProgressDialog;
     Firebase myRef;
 
-    SharedPreferences sharedPreferences;
-
     String uid;
 
-    public static final String MyUSER = "MyUser" ;
     public static final String Email = "emailKey";
     public static final String Password = "passwordKey";
     public static final String Uid = "uidKey";
@@ -36,8 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        sharedPreferences = getSharedPreferences(MyUSER, Context.MODE_PRIVATE);
 
         email = (EditText)findViewById(R.id.loginEmail);
         password = (EditText)findViewById(R.id.loginPassword);
@@ -48,8 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         myRef = new Firebase("https://park-le.firebaseio.com");
 
         // if user logged in, then take straight to next activity
-        if (sharedPreferences.contains(Email) && sharedPreferences.contains(Password)) {
-            uid = sharedPreferences.getString(Uid, null);
+        if (ParkLE.sharedPreferences.contains(Email) && ParkLE.sharedPreferences.contains(Password)) {
+            uid = ParkLE.sharedPreferences.getString(Uid, null);
 //            Intent nextIntent = new Intent(getApplicationContext(),ControlActivity.class);
 //            nextIntent.putExtra("uid", uid);
 //            startActivity(nextIntent);
@@ -71,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onAuthenticated(AuthData authData) {
                         uid = authData.getUid();
 
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
 
                         editor.putString(Email, email.getText().toString());
                         editor.putString(Password, password.getText().toString());

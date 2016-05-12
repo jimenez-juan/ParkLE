@@ -104,7 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
                             newDriver.setValue(driver);
 
                             // add user email, password, and UID to sharedPreferences
-
+                            // ParkLE.sharedPreferences
 
 
                             // launch next activity
