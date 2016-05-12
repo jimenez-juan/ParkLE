@@ -94,11 +94,18 @@ public class RegisterActivity extends AppCompatActivity {
                             driver.put("licensePlate",regLicenseNum);
                             driver.put("passType",passType);
                             driver.put("registerTime",time);
+                            driver.put("moduleMacAddress","");
+                            driver.put("isParked?","false");
+                            driver.put("lotName","");
 
-                            Firebase newDriver = myRef.child(uid).push();
+                            Firebase newDriver = myRef.child("users").push();
                             String fbid = newDriver.getKey();
 
                             newDriver.setValue(driver);
+
+                            // add user email, password, and UID to sharedPreferences
+
+
 
                             // launch next activity
 //                            Intent nextIntent = new Intent(getApplicationContext(),LoginActivity.class);
