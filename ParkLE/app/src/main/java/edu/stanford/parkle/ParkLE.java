@@ -66,8 +66,8 @@ public class ParkLE extends Application {
         lotNames.put(LOT_C_BEACON_ADDRESS, getString(R.string.lot_c_name));
 
 
-        boolean userExists = true;
-        if (userExists) {
+        boolean userLoggedIn = true;
+        if (userLoggedIn) {
             Intent checkBeaconAlarm = new Intent(this, BeaconWakefulReceiver.class);
             checkBeaconAlarm.setAction(INTENT_ACTION_CHECK_BEACON);
             PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(this, 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);

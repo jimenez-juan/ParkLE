@@ -10,11 +10,14 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.util.Log;
+
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 
 public class FindBeaconService extends IntentService implements BluetoothAdapter.LeScanCallback {
 
@@ -28,10 +31,10 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
     private Intent serviceIntent;
 
     private BluetoothAdapter mAdapter;
-//    private BluetoothGatt mConnectedGatt = null;
-//    private BluetoothGattCharacteristic tx;
-//    private BluetoothGattCharacteristic rx;
+    // TODO: Maybe make this an hashmap of strings and forget the device to make for faster processing
     private ArrayList<BluetoothDevice> mDevices;
+
+    private Firebase mFirebaseRef;
 
     public FindBeaconService() {
         super("FindBeaconService");
@@ -43,6 +46,8 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         serviceIntent = intent;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mDevices = new ArrayList<>();
+
+        mFirebaseRef = new Firebase("https://park-le.firebaseio.com");
 
         mAdapter.startLeScan(this);
 
@@ -94,13 +99,13 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
             }
         }
 
+        Log.e("TESTING", "Previous State " + currentCarState);
 
         switch (currentCarState) {
             case ParkLE.CAR_NOT_IN_LOT:
                 if ((currentCarModuleState == ParkLE.CONNECTED) && (currentBeaconState == ParkLE.CONNECTED)) {
                     currentCarState = ParkLE.CAR_IDLE_IN_LOT;
                 }
-                Log.e("TESTING", "CAR_NOT_IN_LOT");
                 break;
 
             case ParkLE.CAR_IDLE_IN_LOT:
@@ -110,7 +115,6 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
                 } else if (currentBeaconState == ParkLE.NOT_CONNECTED) {
                     currentCarState = ParkLE.CAR_NOT_IN_LOT;
                 }
-                Log.e("TESTING", "CAR_IDLE_IN_LOT");
                 break;
 
             case ParkLE.CAR_PARKED_IN_LOT:
@@ -118,9 +122,10 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
                     currentCarState = ParkLE.CAR_IDLE_IN_LOT;
                     updateCloud(false, ParkLE.lotNames.get(currentBeaconAddress));
                 }
-                Log.e("TESTING", "CAR_PARKED_IN_LOT");
                 break;
         }
+
+        Log.e("TESTING", "Current State: " + currentCarState);
 
         SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
         editor.putInt(ParkLE.CAR_STATE_INFO, currentCarState);
@@ -128,7 +133,115 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         editor.commit();
     }
 
-    private void updateCloud(boolean parked, String lotName) {
+    private void updateCloud(final boolean isParked, final String lotName) {
+        final Semaphore semaphore = new Semaphore(0);
+
+//        mFirebaseRef.child("users").child(mFirebaseRef.getAuth().getUid()).child("rides")
+//                .setValue(json);
+        mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("isParked?")
+                .setValue(isParked, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError error, Firebase ref) {
+                        if (error == null) {
+                            semaphore.release();
+                        } else {
+                            mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("isParked?")
+                                    .setValue(isParked, new Firebase.CompletionListener() {
+                                        @Override
+                                        public void onComplete(FirebaseError error, Firebase ref) {
+                                            if (error == null) {
+                                                semaphore.release();
+                                            } else {
+                                                Log.e("FIREBASE", "Could not update the firebase. Data is now inaccurate.");
+                                                semaphore.release();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+        });
+
+        mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("lotName")
+                .setValue(lotName, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError error, Firebase ref) {
+                        if (error == null) {
+                            semaphore.release();
+                        } else {
+                            mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("lotName")
+                                    .setValue(lotName, new Firebase.CompletionListener() {
+                                        @Override
+                                        public void onComplete(FirebaseError error, Firebase ref) {
+                                            if (error == null) {
+                                                semaphore.release();
+                                            } else {
+                                                Log.e("FIREBASE", "Could not update the firebase. Data is now inaccurate.");
+                                                semaphore.release();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+        });
+
+
+        // TODO: Decide if we want to do the difficult process of getting the value in the service or calculate fon the other end
+        // TODO: Also change the hardcoded value of the liscense plate
+        mFirebaseRef.child("lots").child(lotName).child("ab1234")
+                .setValue(isParked, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError error, Firebase ref) {
+                        if (error == null) {
+                            semaphore.release();
+                        } else {
+                            mFirebaseRef.child("lots").child(lotName).child("ab1234")
+                                    .setValue(isParked, new Firebase.CompletionListener() {
+                                        @Override
+                                        public void onComplete(FirebaseError error, Firebase ref) {
+                                            if (error == null) {
+                                                semaphore.release();
+                                            } else {
+                                                Log.e("FIREBASE", "Could not update the firebase. Data is now inaccurate.");
+                                                semaphore.release();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+
+
+//        mFirebaseRef.child("lots").child(lotName).child("numTakenSpots")
+//                .setValue(lotName, new Firebase.CompletionListener() {
+//                    @Override
+//                    public void onComplete(FirebaseError error, Firebase ref) {
+//                        if (error == null) {
+//                            semaphore.release();
+//                        } else {
+//                            mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("isParked?")
+//                                    .setValue(parked, new Firebase.CompletionListener() {
+//                                        @Override
+//                                        public void onComplete(FirebaseError error, Firebase ref) {
+//                                            if (error == null) {
+//                                                semaphore.release();
+//                                            } else {
+//                                                Log.e("FIREBASE", "Could not update the firebase. Data is now inaccurate.");
+//                                                semaphore.release();
+//                                            }
+//                                        }
+//                                    });
+//                        }
+//                    }
+//        });
+
+        try
+        {
+            semaphore.acquire(3);
+        }
+        catch(InterruptedException ie)
+        {
+            ie.printStackTrace();
+        }
 
     }
 
