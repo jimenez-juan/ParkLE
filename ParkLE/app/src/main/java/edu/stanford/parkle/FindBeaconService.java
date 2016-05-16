@@ -16,6 +16,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
@@ -32,7 +33,8 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
 
     private BluetoothAdapter mAdapter;
     // TODO: Maybe make this an hashmap of strings and forget the device to make for faster processing
-    private ArrayList<BluetoothDevice> mDevices;
+    //private HashSet<BluetoothDevice> mDevices;
+    private HashSet<String> mDevices;
 
     private Firebase mFirebaseRef;
 
@@ -45,7 +47,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
 
         serviceIntent = intent;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        mDevices = new ArrayList<>();
+        mDevices = new HashSet<>();
 
         mFirebaseRef = new Firebase("https://park-le.firebaseio.com");
 
@@ -60,8 +62,8 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         }
         if (mDevices.size() > 0) {
             Log.e("Service", "found these devices:");
-            for (BluetoothDevice d : mDevices) {
-                Log.e("Service", d.getAddress());
+            for (String s : mDevices) {
+                Log.e("Service", s);
             }
         }
         stopScan();
@@ -71,7 +73,8 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
 
     @Override
     public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-        if (!mDevices.contains(device)) mDevices.add(device);
+        String addr = device.getAddress();
+        if (!mDevices.contains(addr)) mDevices.add(addr);
 //        if (device.getAddress().equals("E9:40:B9:B9:C0:05")) {
 //            mDevices.add(device);
 //            stopScan();
@@ -89,8 +92,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         String currentBeaconAddress = ParkLE.sharedPreferences.getString(ParkLE.BEACON_ADDRESS_INFO, "");
 
         // TODO: This might be inefficient and dumb and perhaps should be done in a better way...
-        for (BluetoothDevice d : mDevices) {
-            String mac = d.getAddress();
+        for (String mac : mDevices) {
             if (mac.equals(ParkLE.CAR_MODULE_ADDRESS)) {
                 currentCarModuleState = ParkLE.CONNECTED;
             } else if (ParkLE.lotNames.containsKey(mac)) {
