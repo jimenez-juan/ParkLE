@@ -33,8 +33,7 @@ public class ParkLE extends Application {
 //    protected static final String CAR_MODULE_STATE_INFO = "carModuleState";
     static final String PASS_TYPE = "PASS_TYPE_KEY";
     static final String MAC_ADDRESS = "MAC_ADDRESS_KEY";
-
-    static final String CAR_MODULE_ADDRESS = "E9:40:B9:B9:C0:05";
+    
     static final String LOT_A_BEACON_ADDRESS = "FA:AD:C0:21:19:3C";
     static final String LOT_B_BEACON_ADDRESS = "C8:05:62:94:0C:10";
     static final String LOT_C_BEACON_ADDRESS = "D4:85:90:D6:9A:CD";
