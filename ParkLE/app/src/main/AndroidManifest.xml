@@ -25,7 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
+        <activity
+            android:name=".RegisterActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
         <activity android:name=".MapActivity" />
 
         <receiver android:name=".BeaconWakefulReceiver" >
@@ -37,6 +40,10 @@
         <service
             android:name=".FindBeaconService"
             android:exported="false" >
+        </service>
+        <service
+            android:name=".FirebaseUpdateService"
+            android:enabled="true">
         </service>
 
         <meta-data

@@ -1,9 +1,12 @@
 package edu.stanford.parkle;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.camera2.params.BlackLevelPattern;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -11,22 +14,27 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements BluetoothAdapter.LeScanCallback{
 
     EditText name, email, licensePlate, password, confirmpassword;
     Button registerButton, pairBluetoothDeviceButton;
@@ -38,9 +46,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     Firebase myRef;
 
-    public static final String Email = "emailKey";
-    public static final String Password = "passwordKey";
-    public static final String Uid = "uidKey";
+    private BluetoothAdapter mAdapter;
+    private ListView deviceList;
+    private ArrayAdapter deviceAdapter;
+    private ArrayList<BluetoothInfo> devices;
+
+    static final String Email = "emailKey";
+    static final String Password = "passwordKey";
+    static final String Uid = "uidKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerButton = (Button)findViewById(R.id.registerFirebase);
         pairBluetoothDeviceButton = (Button)findViewById(R.id.registerBluetoothDeviceButton);
+
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,11 +156,41 @@ public class RegisterActivity extends AppCompatActivity {
         pairBluetoothDeviceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog deviceListingDialog = new AlertDialog.Builder(RegisterActivity.this).create();
-                deviceListingDialog.setTitle("Pairing...");
-                deviceListingDialog.setMessage("Select your ParkLE device");
-                LayoutInflater inflater = getLayoutInflater();
+                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                LayoutInflater factory = getLayoutInflater();
+                final View vi = factory.inflate(R.layout.dialog_bluetooth_pair, null);
+                builder.setView(vi);
+                builder.setTitle("Select your Bluetooth device.");
+                deviceList = (ListView) vi.findViewById(R.id.device_list);
 
+                devices = new ArrayList<>();
+                deviceAdapter = new DeviceListAdapter(RegisterActivity.this, R.layout.item_bluetooth_device, devices);
+                mAdapter = BluetoothAdapter.getDefaultAdapter();
+                deviceList.setAdapter(deviceAdapter);
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                final AlertDialog dialog = builder.create();
+
+                deviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        ((TextView) findViewById(R.id.bluetooth_mac_text)).setText(devices.get(position).device.getAddress());
+                        mAdapter.stopLeScan(RegisterActivity.this);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setCancelable(false);
+                dialog.show();
+
+                mAdapter.startLeScan(RegisterActivity.this);
             }
         });
 
@@ -188,5 +232,17 @@ public class RegisterActivity extends AppCompatActivity {
 //        });
 
 
+    }
+
+    @Override
+    public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+        BluetoothInfo bi = new BluetoothInfo(device, rssi);
+        int ind = devices.indexOf(bi);
+        if (ind < 0) {
+            devices.add(bi);
+        } else {
+            devices.set(ind, bi);
+        }
+        deviceAdapter.notifyDataSetChanged();
     }
 }
