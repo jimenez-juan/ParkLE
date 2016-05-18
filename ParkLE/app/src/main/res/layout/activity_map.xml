@@ -17,4 +17,38 @@
         android:id="@+id/logoutButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="80dp"
+        android:id="@+id/mapLayout">
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Preference 1: "
+        android:textStyle="bold"
+        android:textColor="#0000FF"
+        android:textSize="22sp"
+        android:id="@+id/parkingLotName"
+        android:layout_below="@+id/mapLayout"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/parkingLotSpaces"
+        android:text="Num spaces"
+        android:textColor="#0000FF"
+        android:textSize="22sp"
+        android:layout_toRightOf="@+id/parkingLotName"
+        android:layout_toEndOf="@+id/parkingLotName"
+        android:layout_alignBaseline="@+id/parkingLotName"
+        android:layout_marginLeft="30dp" />
+
+
 </RelativeLayout>

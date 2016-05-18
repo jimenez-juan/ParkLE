@@ -1,6 +1,8 @@
 package edu.stanford.parkle;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,9 +13,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+
 public class MapActivity extends Activity {
 
     Button logoutButton;
+    GoogleMap googleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +28,14 @@ public class MapActivity extends Activity {
         setContentView(R.layout.activity_map);
 
         logoutButton = (Button)findViewById(R.id.logoutButton);
+
+
+        FragmentManager FM = getFragmentManager();
+        FragmentTransaction FT = FM.beginTransaction();
+
+        MapFragmentClass MF = new MapFragmentClass();
+        FT.add(R.id.mapLayout, MF);
+        FT.commit();
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
