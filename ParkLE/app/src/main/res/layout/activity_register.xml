@@ -44,7 +44,7 @@
         android:layout_alignLeft="@id/registerNameText"
         android:layout_alignStart="@id/registerNameText"
         android:layout_below="@id/registerNameText"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
         android:layout_alignLeft="@id/registerNameText"
         android:layout_alignStart="@id/registerNameText"
         android:layout_below="@id/registerEmailText"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
         android:layout_alignLeft="@id/registerPlatesText"
         android:layout_alignStart="@id/registerPlatesText"
         android:layout_below="@id/registerPlatesText"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
         android:layout_alignLeft="@id/registerPassTypeText"
         android:layout_alignStart="@id/registerPassTypeText"
         android:layout_below="@id/registerPassTypeText"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -92,7 +92,20 @@
         android:layout_alignLeft="@id/registerNameText"
         android:layout_alignStart="@id/registerNameText"
         android:layout_below="@id/registerPasswordText"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="30dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/registerBluetoothDeviceButton"
+        android:text="Pair Device"
+        android:textSize="12dp"
+        android:textColor="#000000"
+        android:layout_alignLeft="@id/registerConfirmPasswordText"
+        android:layout_alignStart="@id/registerConfirmPasswordText"
+        android:layout_below="@id/registerConfirmPasswordText"
+        android:layout_marginLeft="-5dp"
+        android:layout_marginTop="20dp"/>
 
 
     <EditText
@@ -178,13 +191,22 @@
         android:layout_toEndOf="@id/registerConfirmPasswordText"
         android:layout_alignBaseline="@id/registerConfirmPasswordText" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose device first"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/registerBluetoothDeviceButton"
+        android:layout_toEndOf="@id/registerBluetoothDeviceButton"
+        android:layout_alignBaseline="@id/registerBluetoothDeviceButton" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
         android:id="@+id/registerFirebase"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="425dp" />
+        android:layout_marginTop="400dp" />
 
 
 </RelativeLayout>
