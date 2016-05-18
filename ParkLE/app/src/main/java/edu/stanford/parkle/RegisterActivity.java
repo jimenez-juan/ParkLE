@@ -1,11 +1,15 @@
 package edu.stanford.parkle;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -25,7 +29,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     EditText name, email, licensePlate, password, confirmpassword;
-    Button register;
+    Button registerButton, pairBluetoothDeviceButton;
     RadioGroup passTypeGroup;
     RadioButton passA, passC, passRadioButton;
     String passType;
@@ -33,6 +37,10 @@ public class RegisterActivity extends AppCompatActivity {
     Calendar c = Calendar.getInstance();
 
     Firebase myRef;
+
+    public static final String Email = "emailKey";
+    public static final String Password = "passwordKey";
+    public static final String Uid = "uidKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +59,10 @@ public class RegisterActivity extends AppCompatActivity {
         passA = (RadioButton)findViewById(R.id.radioButtonA);
         passC = (RadioButton)findViewById(R.id.radioButtonC);
 
-        register = (Button)findViewById(R.id.registerFirebase);
+        registerButton = (Button)findViewById(R.id.registerFirebase);
+        pairBluetoothDeviceButton = (Button)findViewById(R.id.registerBluetoothDeviceButton);
 
-        register.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -104,13 +113,18 @@ public class RegisterActivity extends AppCompatActivity {
                             newDriver.setValue(driver);
 
                             // add user email, password, and UID to sharedPreferences
-                            // ParkLE.sharedPreferences
+                            SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
 
+                            editor.putString(Email, email.getText().toString());
+                            editor.putString(Password, password.getText().toString());
+                            editor.putString(Uid, uid);
+                            editor.putString(ParkLE.PASS_TYPE, passType);
+                            editor.commit();
 
                             // launch next activity
-//                            Intent nextIntent = new Intent(getApplicationContext(),LoginActivity.class);
-//                            startActivity(nextIntent);
-//                            finish();
+                            Intent nextIntent = new Intent(getApplicationContext(),MapActivity.class);
+                            startActivity(nextIntent);
+                            finish();
                         }
 
                         @Override
@@ -121,6 +135,17 @@ public class RegisterActivity extends AppCompatActivity {
                     });
                 }
 
+
+            }
+        });
+
+        pairBluetoothDeviceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog deviceListingDialog = new AlertDialog.Builder(RegisterActivity.this).create();
+                deviceListingDialog.setTitle("Pairing...");
+                deviceListingDialog.setMessage("Select your ParkLE device");
+                LayoutInflater inflater = getLayoutInflater();
 
             }
         });

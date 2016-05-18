@@ -13,8 +13,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -24,6 +30,8 @@ public class LoginActivity extends AppCompatActivity {
     Firebase myRef;
 
     String uid;
+
+    String passType, macAddress;
 
     public static final String Email = "emailKey";
     public static final String Password = "passwordKey";
@@ -45,10 +53,10 @@ public class LoginActivity extends AppCompatActivity {
         // if user logged in, then take straight to next activity
         if (ParkLE.sharedPreferences.contains(Email) && ParkLE.sharedPreferences.contains(Password)) {
             uid = ParkLE.sharedPreferences.getString(Uid, null);
-//            Intent nextIntent = new Intent(getApplicationContext(),ControlActivity.class);
-//            nextIntent.putExtra("uid", uid);
-//            startActivity(nextIntent);
-//            finish();
+            Intent nextIntent = new Intent(getApplicationContext(),MapActivity.class);
+            nextIntent.putExtra("uid", uid);
+            startActivity(nextIntent);
+            finish();
         }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -65,23 +73,91 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticated(AuthData authData) {
                         uid = authData.getUid();
+                        String key = myRef.child(uid).getKey();
+                        Log.e("TEST: ",key);
+
+                        myRef.child(uid).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                passType = dataSnapshot.child("passType").getValue().toString();
+                                macAddress = dataSnapshot.child("moduleMacAddress").getValue().toString();
+
+                                Log.e("PASS_T_V: ",passType);
+                                Log.e("MAC_A_V: ",macAddress);
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
+
+//                        myRef.child(uid).addChildEventListener(new ChildEventListener() {
+//                            @Override
+//                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                                passType = dataSnapshot.child("passType").getValue().toString();
+//                                macAddress = dataSnapshot.child("moduleMacAddress").getValue().toString();
+//
+//                                Log.e("PASS_T: ",passType);
+//                                Log.e("MAC_A: ",macAddress);
+//                            }
+//
+//                            @Override
+//                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//                            }
+//
+//                            @Override
+//                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                            }
+//
+//                            @Override
+//                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(FirebaseError firebaseError) {
+//                            }
+//                        });
 
                         SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
 
                         editor.putString(Email, email.getText().toString());
                         editor.putString(Password, password.getText().toString());
                         editor.putString(Uid, uid);
+                        editor.putString(ParkLE.PASS_TYPE, passType);
+                        editor.putString(ParkLE.MAC_ADDRESS, macAddress);
                         editor.commit();
 
                         mAuthProgressDialog.dismiss();
                         email.setText("");
                         password.setText("");
 
+
+                        //                        passType = (String) myRef.child(uid).child("passType").getValue().toString();
+
+//                        myRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                Map<String, String> userInfo = new HashMap<String, String>();
+//                                userInfo = (Map) dataSnapshot.getValue();
+//                                passType = userInfo.get("passType");
+//                                macAddress = userInfo.get("MacAddress");
+//
+//                                Log.e("PASS_T: ", passType);
+//                                Log.e("MAC_A: ", macAddress);
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(FirebaseError firebaseError) {
+//
+//                            }
+//                        });
+
+
                         // Take user to next activity
-//                        Intent nextIntent = new Intent(getApplicationContext(),ControlActivity.class);
-//                        nextIntent.putExtra("uid", uid);
-//                        startActivity(nextIntent);
-//                        finish();
+                        Intent nextIntent = new Intent(getApplicationContext(),MapActivity.class);
+                        startActivity(nextIntent);
+                        finish();
                     }
 
                     @Override
@@ -93,6 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                         password.setText("");
                     }
                 });
+
 
             }
 
