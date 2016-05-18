@@ -31,6 +31,8 @@ public class ParkLE extends Application {
 //    protected static final String BEACON_STATE_INFO = "BEACON_STATE";
     static final String BEACON_ADDRESS_INFO = "BEACON_ADDRESS";
 //    protected static final String CAR_MODULE_STATE_INFO = "carModuleState";
+    static final String PASS_TYPE = "PASS_TYPE_KEY";
+    static final String MAC_ADDRESS = "MAC_ADDRESS_KEY";
 
     static final String CAR_MODULE_ADDRESS = "E9:40:B9:B9:C0:05";
     static final String LOT_A_BEACON_ADDRESS = "FA:AD:C0:21:19:3C";
@@ -66,7 +68,7 @@ public class ParkLE extends Application {
         lotNames.put(LOT_C_BEACON_ADDRESS, getString(R.string.lot_c_name));
 
 
-        boolean userLoggedIn = true;
+        boolean userLoggedIn = false;
         if (userLoggedIn) {
             Intent checkBeaconAlarm = new Intent(this, BeaconWakefulReceiver.class);
             checkBeaconAlarm.setAction(INTENT_ACTION_CHECK_BEACON);
