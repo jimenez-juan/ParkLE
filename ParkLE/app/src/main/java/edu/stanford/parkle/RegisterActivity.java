@@ -157,6 +157,8 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                             editor.putString(ParkLE.MAC_ADDRESS_KEY, regMAC);
                             editor.commit();
 
+                            mProgress.dismiss();
+
                             // TODO: START TIMER!!
 
                             // launch next activity
@@ -182,6 +184,7 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                                     Log.e("FIREBASE", firebaseError.getDetails());
                                     break;
                             }
+                            mProgress.dismiss();
                             Toast.makeText(RegisterActivity.this, t, Toast.LENGTH_LONG).show();
                         }
                     });
