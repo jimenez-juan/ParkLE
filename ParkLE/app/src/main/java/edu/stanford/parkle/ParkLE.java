@@ -13,27 +13,25 @@ import com.firebase.client.Firebase;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by juanj on 5/5/16.
- */
 public class ParkLE extends Application {
 
     // All constants and global variables are purposely declared here without a privacy modifier
     // because they are intended to be visible to the entire package which is the default.
 
-    static final long ALARM_INTERVAL = 20*1000;
-    static final long SCAN_PERIOD = 2*1000;
+    static final long ALARM_INTERVAL_MS = 20*1000;
+    static final long SCAN_PERIOD_MS = 2*1000;
 
     static final String INTENT_ACTION_CHECK_BEACON = "edu.parkle.CHECK_BEACON";
 
     static final String USER_INFO = "userInfo";
     static final String CAR_STATE_INFO = "CURRENT_STATE" ;
-//    protected static final String BEACON_STATE_INFO = "BEACON_STATE";
     static final String BEACON_ADDRESS_INFO = "BEACON_ADDRESS";
+    //    protected static final String BEACON_STATE_INFO = "BEACON_STATE";
 //    protected static final String CAR_MODULE_STATE_INFO = "carModuleState";
-    static final String PASS_TYPE = "PASS_TYPE_KEY";
-    static final String MAC_ADDRESS = "MAC_ADDRESS_KEY";
-    
+    static final String PASS_TYPE_KEY = "PASS_TYPE_KEY";
+    static final String MAC_ADDRESS_KEY = "MAC_ADDRESS_KEY";
+    static final String UID_KEY = "UID_KEY";
+
     static final String LOT_A_BEACON_ADDRESS = "FA:AD:C0:21:19:3C";
     static final String LOT_B_BEACON_ADDRESS = "C8:05:62:94:0C:10";
     static final String LOT_C_BEACON_ADDRESS = "D4:85:90:D6:9A:CD";
@@ -73,7 +71,7 @@ public class ParkLE extends Application {
             checkBeaconAlarm.setAction(INTENT_ACTION_CHECK_BEACON);
             PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(this, 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
             AlarmManager alarms = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-            alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ALARM_INTERVAL, pendingCheckBeaconAlarm);
+            alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ALARM_INTERVAL_MS, pendingCheckBeaconAlarm);
 
             Log.e("ME202", "Setting alarm");
         }

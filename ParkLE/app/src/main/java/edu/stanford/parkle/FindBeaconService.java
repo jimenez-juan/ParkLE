@@ -52,7 +52,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         mAdapter.startLeScan(this);
 
         try {
-            Thread.sleep(ParkLE.SCAN_PERIOD);
+            Thread.sleep(ParkLE.SCAN_PERIOD_MS);
         } catch (Exception e) {
             Log.e("BeaconScanning", "Error in attempt to sleep for scan.");
             restartAlarm(intent);
@@ -84,8 +84,8 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         int currentCarModuleState = ParkLE.NOT_CONNECTED;
         int currentBeaconState = ParkLE.NOT_CONNECTED;
         String currentBeaconAddress = ParkLE.sharedPreferences.getString(ParkLE.BEACON_ADDRESS_INFO, "");
-        String userPassType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE, "C");
-        String userCarModuleMAC = ParkLE.sharedPreferences.getString(ParkLE.MAC_ADDRESS, "E9:40:B9:B9:C0:05"); // TODO: Just return empty string when not testing
+        String userPassType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE_KEY, "C");
+        String userCarModuleMAC = ParkLE.sharedPreferences.getString(ParkLE.MAC_ADDRESS_KEY, "E9:40:B9:B9:C0:05"); // TODO: Just return empty string when not testing
 
         // TODO: This might be inefficient and dumb and perhaps should be done in a better way...
         if (currentCarState == ParkLE.CAR_PARKED_IN_LOT) {
@@ -248,7 +248,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         checkBeaconAlarm.setAction(ParkLE.INTENT_ACTION_CHECK_BEACON);
         PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(this, 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarms = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ParkLE.ALARM_INTERVAL, pendingCheckBeaconAlarm);
+        alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ParkLE.ALARM_INTERVAL_MS, pendingCheckBeaconAlarm);
         BeaconWakefulReceiver.completeWakefulIntent(serviceIntent);
     }
 }

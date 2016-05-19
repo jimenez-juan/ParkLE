@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.camera2.params.BlackLevelPattern;
+import android.media.MediaPlayer;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -36,24 +37,24 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity implements BluetoothAdapter.LeScanCallback{
 
-    EditText name, email, licensePlate, password, confirmpassword;
-    Button registerButton, pairBluetoothDeviceButton;
-    RadioGroup passTypeGroup;
-    RadioButton passA, passC, passRadioButton;
-    String passType;
+    private EditText name, email, licensePlate, password, confirmPassword;
+    private TextView bluetoothMACText;
+    private Button registerButton, pairBluetoothDeviceButton;
+    private RadioGroup passTypeGroup;
+    private RadioButton passA, passC;
 
-    Calendar c = Calendar.getInstance();
+    private Calendar c = Calendar.getInstance();
 
-    Firebase myRef;
+    private Firebase myRef;
 
     private BluetoothAdapter mAdapter;
     private ListView deviceList;
     private ArrayAdapter deviceAdapter;
     private ArrayList<BluetoothInfo> devices;
+    private ProgressDialog mProgress;
 
     static final String Email = "emailKey";
     static final String Password = "passwordKey";
-    static final String Uid = "uidKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
         email = (EditText)findViewById(R.id.registerEmail);
         licensePlate = (EditText)findViewById(R.id.licensePlate);
         password = (EditText)findViewById(R.id.passwordInput);
-        confirmpassword = (EditText)findViewById(R.id.confirmPasswordInput);
+        confirmPassword = (EditText)findViewById(R.id.confirmPasswordInput);
 
         passTypeGroup = (RadioGroup)findViewById(R.id.passTypeRadioGroup);
         passA = (RadioButton)findViewById(R.id.radioButtonA);
@@ -74,7 +75,12 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
 
         registerButton = (Button)findViewById(R.id.registerFirebase);
         pairBluetoothDeviceButton = (Button)findViewById(R.id.registerBluetoothDeviceButton);
+        bluetoothMACText = ((TextView) findViewById(R.id.bluetooth_mac_text));
 
+        mProgress = new ProgressDialog(RegisterActivity.this);
+        mProgress.setIndeterminate(true);
+        mProgress.setCancelable(false);
+        mProgress.setMessage("Registering...");
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,25 +90,32 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                 final String regEmail = email.getText().toString();
                 final String regLicenseNum = licensePlate.getText().toString();
                 final String regPW = password.getText().toString();
-                final String regConfirmPW = confirmpassword.getText().toString();
+                final String regConfirmPW = confirmPassword.getText().toString();
+                final String regMAC = bluetoothMACText.getText().toString();
 
-                if(regName.isEmpty() || regEmail.isEmpty() || regLicenseNum.isEmpty() || regPW.isEmpty() || regConfirmPW.isEmpty() || !(passA.isChecked() || passC.isChecked())) {
-                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                if (regName.isEmpty() || regEmail.isEmpty() || regLicenseNum.isEmpty() || regPW.isEmpty()
+                        || regConfirmPW.isEmpty() || !(passA.isChecked() || passC.isChecked()) || regMAC.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields.", Toast.LENGTH_LONG).show();
                 } else {
+                    if (!regConfirmPW.equals(regPW)) {
+                        Toast.makeText(getApplicationContext(), "Passwords do not match.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    mProgress.show();
                     myRef.createUser(regEmail, regPW, new Firebase.ValueResultHandler<Map<String, Object>>() {
                         @Override
                         public void onSuccess(Map<String, Object> stringObjectMap) {
                             // on success, log the user in and store needed information
-                            Toast.makeText(getApplicationContext(), regName + ", welcome to ParkLE", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), regName + ", welcome to ParkLE.", Toast.LENGTH_SHORT).show();
 
                             // store pass type
-                            String passType = null;
+                            String passType;
                             if (passA.isChecked()) {
                                 passType = "A";
-                                Log.e("TYPE:","A");
+                                Log.e("TYPE:", "A");
                             } else {
                                 passType = "C";
-                                Log.e("TYPE:","C");
+                                Log.e("TYPE:", "C");
                             }
 
                             // store register time
@@ -112,39 +125,64 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
 
                             String uid = stringObjectMap.get("uid").toString();
 
-                            Map<String, String> driver = new HashMap<String, String>();
-                            driver.put("name",regName);
-                            driver.put("licensePlate",regLicenseNum);
-                            driver.put("passType",passType);
-                            driver.put("registerTime",time);
-                            driver.put("moduleMacAddress","");
-                            driver.put("isParked?","false");
-                            driver.put("lotName","");
+                            Map<String, String> driver = new HashMap<>();
+                            driver.put("name", regName);
+                            driver.put("licensePlate", regLicenseNum);
+                            driver.put("passType", passType);
+                            driver.put("registerTime", time);
+                            driver.put("moduleMacAddress", regMAC);
+                            driver.put("isParked?", "false");
+                            driver.put("lotName", "");
 
-                            Firebase newDriver = myRef.child("users").push();
-                            String fbid = newDriver.getKey();
-
-                            newDriver.setValue(driver);
+                            myRef.child("users").child(uid).setValue(driver, new Firebase.CompletionListener() {
+                                @Override
+                                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                                    if (firebaseError != null) {
+                                        Toast.makeText(getApplicationContext(), "Error updating cloud info. Please contact for help.", Toast.LENGTH_LONG).show();
+                                        Log.e("FIREBASE", "Could not update the user's firebase info. Data is now inaccurate.");
+                                        Log.e("FIREBASE", firebaseError.getMessage());
+                                    }
+                                }
+                            });
 
                             // add user email, password, and UID to sharedPreferences
                             SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
 
-                            editor.putString(Email, email.getText().toString());
-                            editor.putString(Password, password.getText().toString());
-                            editor.putString(Uid, uid);
-                            editor.putString(ParkLE.PASS_TYPE, passType);
+                            editor.putString(Email, regEmail);
+                            editor.putString(Password, regPW);
+
+                            editor.putString(ParkLE.UID_KEY, uid);
+                            editor.putInt(ParkLE.CAR_STATE_INFO, ParkLE.CAR_NOT_IN_LOT);
+                            editor.putString(ParkLE.PASS_TYPE_KEY, passType);
+                            editor.putString(ParkLE.MAC_ADDRESS_KEY, regMAC);
                             editor.commit();
 
+                            // TODO: START TIMER!!
+
                             // launch next activity
-                            Intent nextIntent = new Intent(getApplicationContext(),MapActivity.class);
+                            Intent nextIntent = new Intent(getApplicationContext(), MapActivity.class);
                             startActivity(nextIntent);
                             finish();
+
                         }
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
-                            // on error report that there was an error and account not created
-                            Toast.makeText(getApplicationContext(), "Error creating account! Try again", Toast.LENGTH_SHORT).show();
+                            String t;
+                            switch (firebaseError.getCode()) {
+                                case FirebaseError.EMAIL_TAKEN:
+                                    t = "An account with that email already exists.";
+                                    break;
+                                case FirebaseError.INVALID_EMAIL:
+                                    t = "Invalid email.";
+                                    break;
+                                default:
+                                    t = "There was an error creating a new user.";
+                                    Log.e("FIREBASE", firebaseError.getMessage());
+                                    Log.e("FIREBASE", firebaseError.getDetails());
+                                    break;
+                            }
+                            Toast.makeText(RegisterActivity.this, t, Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -193,44 +231,6 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                 mAdapter.startLeScan(RegisterActivity.this);
             }
         });
-
-
-        // set listener to radio buttons to ensure only one radio button is checked at a time
-        passTypeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                passRadioButton = (RadioButton)findViewById(i);
-//                if (i == R.id.radioButtonA) {
-//                    passType = "A";
-//                } else {
-//                    passType = "C";
-//                }
-
-            }
-        });
-
-
-//        passA.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                if (passC.isChecked()) {
-//                    passC.setChecked(false);
-//                    // passA.setChecked(true);
-//                }
-//            }
-//        });
-//
-//        passC.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                if (passA.isChecked()) {
-//                    passA.setChecked(false);
-//                    passC.setChecked(true);
-//                }
-//                // passC.setChecked(true);
-//            }
-//        });
-
 
     }
 

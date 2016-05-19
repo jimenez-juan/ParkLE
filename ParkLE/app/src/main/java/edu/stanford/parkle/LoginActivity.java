@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String Email = "emailKey";
     public static final String Password = "passwordKey";
-    public static final String Uid = "uidKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // if user logged in, then take straight to next activity
         if (ParkLE.sharedPreferences.contains(Email) && ParkLE.sharedPreferences.contains(Password)) {
-            uid = ParkLE.sharedPreferences.getString(Uid, null);
+            uid = ParkLE.sharedPreferences.getString(ParkLE.UID_KEY, null);
             Intent nextIntent = new Intent(getApplicationContext(),MapActivity.class);
             nextIntent.putExtra("uid", uid);
             startActivity(nextIntent);
@@ -123,9 +122,9 @@ public class LoginActivity extends AppCompatActivity {
 
                         editor.putString(Email, email.getText().toString());
                         editor.putString(Password, password.getText().toString());
-                        editor.putString(Uid, uid);
-                        editor.putString(ParkLE.PASS_TYPE, passType);
-                        editor.putString(ParkLE.MAC_ADDRESS, macAddress);
+                        editor.putString(ParkLE.UID_KEY, uid);
+                        editor.putString(ParkLE.PASS_TYPE_KEY, passType);
+                        editor.putString(ParkLE.MAC_ADDRESS_KEY, macAddress);
                         editor.commit();
 
                         mAuthProgressDialog.dismiss();
