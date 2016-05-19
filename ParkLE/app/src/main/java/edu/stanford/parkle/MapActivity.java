@@ -9,10 +9,17 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,6 +28,8 @@ public class MapActivity extends Activity {
 
     Button logoutButton;
     GoogleMap googleMap;
+    Firebase myRef;
+    TextView pref1Spaces, pref2Spaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +38,15 @@ public class MapActivity extends Activity {
 
         logoutButton = (Button)findViewById(R.id.logoutButton);
 
+        myRef = new Firebase("https://park-le.firebaseio.com");
+
+        pref1Spaces = (TextView) findViewById(R.id.parkingLotSpaces1);
+        pref2Spaces = (TextView) findViewById(R.id.parkingLotSpaces2);
 
         FragmentManager FM = getFragmentManager();
-        FragmentTransaction FT = FM.beginTransaction();
+        final FragmentTransaction FT = FM.beginTransaction();
 
-        MapFragmentClass MF = new MapFragmentClass();
+        final MapFragmentClass MF = new MapFragmentClass();
         FT.add(R.id.mapLayout, MF);
         FT.commit();
 
@@ -50,6 +63,8 @@ public class MapActivity extends Activity {
                         SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
                         editor.clear();
                         editor.commit();
+
+                        FT.remove(MF);
 
                         // take the user back to the login screen
                         finish();
@@ -72,6 +87,33 @@ public class MapActivity extends Activity {
             }
         });
 
+        myRef.child("lots").child("Lot A").child("numSpots").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long numSpaces = (long) dataSnapshot.getValue();
+                Log.e("STRING_RETURNED:",String.valueOf(numSpaces));
+                pref1Spaces.setText(String.valueOf(numSpaces));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        myRef.child("lots").child("Lot B").child("numSpots").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long numSpaces = (long) dataSnapshot.getValue();
+                Log.e("STRING_RETURNED:",String.valueOf(numSpaces));
+                pref2Spaces.setText(String.valueOf(numSpaces));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
 
 
