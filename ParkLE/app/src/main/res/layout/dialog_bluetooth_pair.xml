@@ -17,8 +17,8 @@
             android:text="Signal Strength"
             android:layout_gravity="center_horizontal"
             android:textSize="12sp"
-            android:layout_marginLeft="23dp"
-            android:layout_marginRight="69dp" />
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="80dp" />
 
         <TextView
             android:id="@+id/mac_address"

@@ -52,21 +52,18 @@ public class ParkLE extends Application {
         Firebase.setAndroidContext(this);
 
         sharedPreferences = getSharedPreferences(USER_INFO, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(CAR_STATE_INFO, CAR_IDLE_IN_LOT);
-//        editor.putInt(BEACON_STATE_INFO, CONNECTED);
-        editor.putString(BEACON_ADDRESS_INFO, "FA:AD:C0:21:19:3C");
-//        editor.putInt(CAR_MODULE_STATE_INFO, CONNECTED);
-        editor.commit();
+//
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putInt(CAR_STATE_INFO, CAR_IDLE_IN_LOT);
+//        editor.putString(BEACON_ADDRESS_INFO, "FA:AD:C0:21:19:3C");
+//        editor.commit();
 
         lotNames.put(LOT_A_BEACON_ADDRESS, getString(R.string.lot_a_name));
         lotNames.put(LOT_B_BEACON_ADDRESS, getString(R.string.lot_b_name));
         lotNames.put(LOT_C_BEACON_ADDRESS, getString(R.string.lot_c_name));
 
-
-        boolean userLoggedIn = false;
-        if (userLoggedIn) {
+        if (sharedPreferences.contains(UID_KEY)) // User is already logged in...
+        {
             Intent checkBeaconAlarm = new Intent(this, BeaconWakefulReceiver.class);
             checkBeaconAlarm.setAction(INTENT_ACTION_CHECK_BEACON);
             PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(this, 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -75,6 +72,18 @@ public class ParkLE extends Application {
 
             Log.e("ME202", "Setting alarm");
         }
+
+
+//        boolean userLoggedIn = false;
+//        if (userLoggedIn) {
+//            Intent checkBeaconAlarm = new Intent(this, BeaconWakefulReceiver.class);
+//            checkBeaconAlarm.setAction(INTENT_ACTION_CHECK_BEACON);
+//            PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(this, 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
+//            AlarmManager alarms = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+//            alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ALARM_INTERVAL_MS, pendingCheckBeaconAlarm);
+//
+//            Log.e("ME202", "Setting alarm");
+//        }
     }
 
 }

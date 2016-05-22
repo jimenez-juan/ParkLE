@@ -1,8 +1,11 @@
 package edu.stanford.parkle;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -66,6 +69,14 @@ public class MapActivity extends Activity {
 
                         FT.remove(MF);
 
+                        // Removing the alarm
+                        Intent checkBeaconAlarm = new Intent(getApplicationContext(), BeaconWakefulReceiver.class);
+                        checkBeaconAlarm.setAction(ParkLE.INTENT_ACTION_CHECK_BEACON);
+                        PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(getApplicationContext(), 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
+                        AlarmManager alarms = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                        alarms.cancel(pendingCheckBeaconAlarm);
+                        // Done Removing the alarm
+
                         // take the user back to the login screen
                         finish();
                         Intent nextIntent = new Intent(getApplicationContext(),LoginActivity.class);
@@ -87,12 +98,25 @@ public class MapActivity extends Activity {
             }
         });
 
-        myRef.child("lots").child("Lot A").child("numSpots").addValueEventListener(new ValueEventListener() {
+        myRef.child("lots").child("Lot A").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long numSpaces = (long) dataSnapshot.getValue();
-                Log.e("STRING_RETURNED:",String.valueOf(numSpaces));
-                pref1Spaces.setText(String.valueOf(numSpaces));
+                long numSpots = (long) dataSnapshot.child("numSpots").getValue();
+                long numASpacesInLot = (long) dataSnapshot.child("numAPassesInLot").getValue();
+                long numCSpacesInLot = (long) dataSnapshot.child("numCPassesInLot").getValue();
+
+                Log.e("FIREBASE",String.valueOf(numSpots));
+                Log.e("FIREBASE A",String.valueOf(numASpacesInLot));
+                Log.e("FIREBASE C",String.valueOf(numCSpacesInLot));
+
+                long numAvailable = numSpots - numASpacesInLot - numCSpacesInLot;
+                long occupancy = ((numSpots - numAvailable)*100/numSpots);
+                if (occupancy >= 100) {
+                    pref1Spaces.setText("FULL");
+                } else {
+                    pref1Spaces.setText(String.valueOf(occupancy)+"%");
+                }
+
             }
 
             @Override
@@ -101,12 +125,27 @@ public class MapActivity extends Activity {
             }
         });
 
-        myRef.child("lots").child("Lot B").child("numSpots").addValueEventListener(new ValueEventListener() {
+
+        myRef.child("lots").child("Lot B").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long numSpaces = (long) dataSnapshot.getValue();
-                Log.e("STRING_RETURNED:",String.valueOf(numSpaces));
-                pref2Spaces.setText(String.valueOf(numSpaces));
+                long numSpots = (long) dataSnapshot.child("numSpots").getValue();
+                long numASpacesInLot = (long) dataSnapshot.child("numAPassesInLot").getValue();
+                long numCSpacesInLot = (long) dataSnapshot.child("numCPassesInLot").getValue();
+
+                Log.e("FIREBASE",String.valueOf(numSpots));
+                Log.e("FIREBASE A",String.valueOf(numASpacesInLot));
+                Log.e("FIREBASE C",String.valueOf(numCSpacesInLot));
+
+                long numAvailable = numSpots - numASpacesInLot - numCSpacesInLot;
+                long occupancy = ((numSpots - numAvailable)*100/numSpots);
+
+                if (occupancy >= 100) {
+                    pref2Spaces.setText("FULL");
+                } else {
+                    pref2Spaces.setText(String.valueOf(occupancy)+"%");
+                }
+
             }
 
             @Override
@@ -114,7 +153,6 @@ public class MapActivity extends Activity {
 
             }
         });
-
 
 
     }

@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 public class DeviceListAdapter extends ArrayAdapter<BluetoothInfo> {
@@ -41,8 +43,23 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothInfo> {
 
         BluetoothInfo bi = getItem(position);
 
+        int rID;
         if (vh.im != null) {
-            vh.im.setImageResource(R.drawable.ic_bluetooth_black_24dp);
+            int strength = bi.rssi;
+            if (strength < -90) {
+                rID = R.drawable.wifi_empty;
+            } else if (strength < -80) {
+                rID = R.drawable.wifi_1bar;
+            } else if (strength < -70) {
+                rID = R.drawable.wifi_2bars;
+            } else if (strength < -67) {
+                rID = R.drawable.wifi_3bars;
+            } else {
+                rID = R.drawable.wifi_full;
+            }
+            Picasso.with(v.getContext()).load(rID)
+                    .fit().centerCrop()
+                    .into(vh.im);
         }
 
         if (vh.sigStrength != null) {
@@ -51,6 +68,7 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothInfo> {
 
         if (vh.mac != null) {
             vh.mac.setText(bi.device.getAddress());
+            //vh.mac.setText(bi.device.getName());
         }
 
         return v;
