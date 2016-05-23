@@ -92,6 +92,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         String currentBeaconAddress = ParkLE.sharedPreferences.getString(ParkLE.BEACON_ADDRESS_INFO, "");
         String userPassType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE_KEY, "");
         String userCarModuleMAC = ParkLE.sharedPreferences.getString(ParkLE.MAC_ADDRESS_KEY, "");
+        boolean wasParked = ParkLE.sharedPreferences.getBoolean(ParkLE.WAS_PARKED_KEY, false);
 
         // TODO: This might be inefficient and dumb and perhaps should be done in a better way...
         if (currentCarState == ParkLE.CAR_PARKED_IN_LOT) {
@@ -117,22 +118,30 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
             case ParkLE.CAR_NOT_IN_LOT:
                 if ((currentCarModuleState == ParkLE.CONNECTED) && (currentBeaconState == ParkLE.CONNECTED)) {
                     currentCarState = ParkLE.CAR_IDLE_IN_LOT;
+                    wasParked = false;
+                    //updateCloud(uID, true, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
                 }
                 break;
 
             case ParkLE.CAR_IDLE_IN_LOT:
                 if (currentCarModuleState == ParkLE.NOT_CONNECTED) {
                     currentCarState = ParkLE.CAR_PARKED_IN_LOT;
-                    updateCloud(uID, true, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    if (!wasParked) {
+                        updateCloud(uID, true, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    }
                 } else if (currentBeaconState == ParkLE.NOT_CONNECTED) {
                     currentCarState = ParkLE.CAR_NOT_IN_LOT;
+                    if (wasParked) {
+                        updateCloud(uID, false, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    }
                 }
                 break;
 
             case ParkLE.CAR_PARKED_IN_LOT:
                 if (currentCarModuleState == ParkLE.CONNECTED) {
                     currentCarState = ParkLE.CAR_IDLE_IN_LOT;
-                    updateCloud(uID, false, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    wasParked = true;
+                    //updateCloud(uID, false, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
                 }
                 break;
         }
@@ -142,6 +151,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
         editor.putInt(ParkLE.CAR_STATE_INFO, currentCarState);
         editor.putString(ParkLE.BEACON_ADDRESS_INFO, currentBeaconAddress);
+        editor.putBoolean(ParkLE.WAS_PARKED_KEY, wasParked);
         editor.commit();
     }
 

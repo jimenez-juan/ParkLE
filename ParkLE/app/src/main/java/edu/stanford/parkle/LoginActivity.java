@@ -31,9 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog mAuthProgressDialog;
     private Firebase myRef;
 
-    private String passType, macAddress;
-    private int carStatus;
-
     public static final String Email = "emailKey";
     public static final String Password = "passwordKey";
 
@@ -77,10 +74,11 @@ public class LoginActivity extends AppCompatActivity {
                         myRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                passType = dataSnapshot.child("passType").getValue(String.class);
-                                macAddress = dataSnapshot.child("moduleMacAddress").getValue(String.class);
-                                carStatus = dataSnapshot.child("isParked?").getValue(String.class).equals("true") ? ParkLE.CAR_PARKED_IN_LOT : ParkLE.CAR_NOT_IN_LOT;
+                                String passType = dataSnapshot.child("passType").getValue(String.class);
+                                String macAddress = dataSnapshot.child("moduleMacAddress").getValue(String.class);
+                                boolean wasParked = dataSnapshot.child("isParked?").getValue(String.class).equals("true") ;
 
+                                int carStatus = wasParked ? ParkLE.CAR_PARKED_IN_LOT : ParkLE.CAR_NOT_IN_LOT;
                                 Log.e("PASS_T_V: ",passType);
                                 Log.e("MAC_A_V: ", macAddress);
 
@@ -93,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putInt(ParkLE.CAR_STATE_INFO, carStatus);
                                 editor.putString(ParkLE.PASS_TYPE_KEY, passType);
                                 editor.putString(ParkLE.MAC_ADDRESS_KEY, macAddress);
+                                editor.putBoolean(ParkLE.WAS_PARKED_KEY, wasParked);
                                 editor.commit();
                                 email.setText("");
                                 password.setText("");

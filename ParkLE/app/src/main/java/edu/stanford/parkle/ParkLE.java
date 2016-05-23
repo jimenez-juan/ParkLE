@@ -18,7 +18,7 @@ public class ParkLE extends Application {
     // All constants and global variables are purposely declared here without a privacy modifier
     // because they are intended to be visible to the entire package which is the default.
 
-    static final long ALARM_INTERVAL_MS = 20*1000;
+    static final long ALARM_INTERVAL_MS = 5*1000;
     static final long SCAN_PERIOD_MS = 2*1000;
 
     static final String INTENT_ACTION_CHECK_BEACON = "edu.parkle.CHECK_BEACON";
@@ -31,6 +31,7 @@ public class ParkLE extends Application {
     static final String PASS_TYPE_KEY = "PASS_TYPE_KEY";
     static final String MAC_ADDRESS_KEY = "MAC_ADDRESS_KEY";
     static final String UID_KEY = "UID_KEY";
+    static final String WAS_PARKED_KEY = "WAS_PARKED_KEY";
 
     static final String LOT_A_BEACON_ADDRESS = "FA:AD:C0:21:19:3C";
     static final String LOT_B_BEACON_ADDRESS = "C8:05:62:94:0C:10";

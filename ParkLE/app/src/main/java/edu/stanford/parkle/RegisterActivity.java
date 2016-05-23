@@ -158,6 +158,7 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                             editor.putInt(ParkLE.CAR_STATE_INFO, ParkLE.CAR_NOT_IN_LOT);
                             editor.putString(ParkLE.PASS_TYPE_KEY, passType);
                             editor.putString(ParkLE.MAC_ADDRESS_KEY, regMAC);
+                            editor.putBoolean(ParkLE.WAS_PARKED_KEY, false);
                             editor.commit();
 
                             // Setting Alarm
