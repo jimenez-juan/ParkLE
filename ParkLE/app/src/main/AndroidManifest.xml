@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.stanford.parkle" >
+    package="edu.stanford.parkle">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -16,8 +16,8 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".LoginActivity" >
+        android:theme="@style/AppTheme">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +30,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".MapActivity" />
 
-        <receiver android:name=".BeaconWakefulReceiver" >
+        <receiver android:name=".BeaconWakefulReceiver">
             <intent-filter>
                 <action android:name="edu.parkle.CHECK_BEACON" />
             </intent-filter>
@@ -38,21 +38,28 @@
 
         <service
             android:name=".FindBeaconService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name=".FirebaseUpdateService"
-            android:enabled="true" >
-        </service>
+            android:enabled="true"></service>
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" >
-        </meta-data>
+            android:value="@integer/google_play_services_version"></meta-data>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDPVxjge_FmAO2nauVPsVqKFOL1BXyxl_E" >
-        </meta-data>
+            android:value="AIzaSyDPVxjge_FmAO2nauVPsVqKFOL1BXyxl_E"></meta-data>
+
+        <activity
+            android:name=".IntroActivity"
+            android:label="@string/title_activity_intro"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -6,9 +6,10 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.camera2.params.BlackLevelPattern;
-import android.media.MediaPlayer;
-import android.provider.MediaStore;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -26,8 +26,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.morphingbutton.MorphingButton;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,8 +41,11 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity implements BluetoothAdapter.LeScanCallback{
 
     private EditText name, email, licensePlate, password, confirmPassword;
+    private TextView title;
     private TextView bluetoothMACText;
-    private Button registerButton, pairBluetoothDeviceButton;
+    private Button registerButton;
+    private MorphingButton pairBluetoothDeviceButton;
+    private MorphingButton.Params circle;
     private RadioGroup passTypeGroup;
     private RadioButton passA, passC;
 
@@ -63,6 +69,10 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
 
         myRef = new Firebase("https://park-le.firebaseio.com");
 
+        title = (TextView) findViewById(R.id.title);
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/quartzo.ttf");
+        title.setTypeface(typeFace);
+
         name = (EditText)findViewById(R.id.registerNameInput);
         email = (EditText)findViewById(R.id.registerEmail);
         licensePlate = (EditText)findViewById(R.id.licensePlate);
@@ -74,7 +84,33 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
         passC = (RadioButton)findViewById(R.id.radioButtonC);
 
         registerButton = (Button)findViewById(R.id.registerFirebase);
-        pairBluetoothDeviceButton = (Button)findViewById(R.id.registerBluetoothDeviceButton);
+
+
+        // sample demonstrate how to morph button to green circle with icon
+        pairBluetoothDeviceButton = (MorphingButton)findViewById(R.id.registerBluetoothDeviceButton);
+        // inside on click event
+        //pairBluetoothDeviceButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        MorphingButton.Params morph1 = MorphingButton.Params.create()
+                .duration(5)
+                .cornerRadius(2) // 56 dp
+                .width(200) // 56 dp
+                .height(100) // 56 dp
+                .text("Pair Device")
+                .color(R.color.colorAccent); // normal state color
+
+        pairBluetoothDeviceButton.morph(morph1);
+        pairBluetoothDeviceButton.setTextColor(Color.WHITE);
+
+        circle = MorphingButton.Params.create()
+                .duration(500)
+                .cornerRadius(80) // 56 dp
+                .width(80) // 56 dp
+                .height(80) // 56 dp
+                .color(R.color.colorAccent) // normal state color
+                .colorPressed(R.color.green) // pressed state color
+                .icon(R.drawable.check_mark_16); //icon
+
+
         bluetoothMACText = ((TextView) findViewById(R.id.bluetooth_mac_text));
 
         mProgress = new ProgressDialog(RegisterActivity.this);
@@ -208,6 +244,7 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                 deviceAdapter = new DeviceListAdapter(RegisterActivity.this, R.layout.item_bluetooth_device, devices);
                 mAdapter = BluetoothAdapter.getDefaultAdapter();
                 deviceList.setAdapter(deviceAdapter);
+                pairBluetoothDeviceButton.morph(circle);
 
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -225,6 +262,8 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                         ((TextView) findViewById(R.id.bluetooth_mac_text)).setText(devices.get(position).device.getAddress());
                         mAdapter.stopLeScan(RegisterActivity.this);
                         dialog.dismiss();
+                        pairBluetoothDeviceButton.morph(circle);
+                       //pairBluetoothDeviceButton.setBackgroundColor(Color.TRANSPARENT);
                     }
                 });
 

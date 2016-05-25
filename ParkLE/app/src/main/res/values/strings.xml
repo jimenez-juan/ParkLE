@@ -3,4 +3,7 @@
     <string name="lot_a_name">Lot A</string>
     <string name="lot_b_name">Lot B</string>
     <string name="lot_c_name">Lot C</string>
+    <string name="title_activity_intro">IntroActivity</string>
+
+
 </resources>
