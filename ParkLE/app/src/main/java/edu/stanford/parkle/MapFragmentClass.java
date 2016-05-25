@@ -31,10 +31,12 @@ public class MapFragmentClass extends Fragment implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap) {
         LatLng marker1 = new LatLng(37.427729, -122.181958);
         LatLng marker2 = new LatLng(37.423194, -122.171299);
+        LatLng marker3 = new LatLng(37.423491, -122.173796);
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker1, 14));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker3, 14));
         googleMap.addMarker(new MarkerOptions().title("Preference 1").position(marker1).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         googleMap.addMarker(new MarkerOptions().title("Preference 2").position(marker2).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        googleMap.addMarker(new MarkerOptions().title("Preference 3").position(marker3).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
     }
 
     @Override

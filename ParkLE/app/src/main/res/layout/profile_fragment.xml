@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099BB">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Profile"
+        android:id="@+id/fragmentTitle"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Pass Type:"
+        android:id="@+id/currentPassTypeName"
+        android:layout_below="@+id/fragmentTitle"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="44dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="A"
+        android:textColor="#000000"
+        android:id="@+id/currentPassTypeView"
+        android:layout_toRightOf="@id/currentPassTypeName"
+        android:layout_toEndOf="@id/currentPassTypeName"
+        android:layout_marginLeft="35dp"
+        android:layout_alignBaseline="@+id/currentPassTypeName"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Lot Parked: "
+        android:id="@+id/fragmentLotParked"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_below="@+id/currentPassTypeName"
+        android:layout_marginTop="100dp"
+        android:layout_alignLeft="@+id/currentPassTypeName"
+        android:layout_alignStart="@+id/currentPassTypeName"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Santa Teresa"
+        android:textColor="#000000"
+        android:id="@+id/fragmentLotParkedView"
+        android:layout_toRightOf="@id/fragmentLotParked"
+        android:layout_toEndOf="@id/fragmentLotParked"
+        android:layout_marginLeft="15dp"
+        android:layout_alignBaseline="@+id/fragmentLotParked"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Preferences"
+        android:id="@+id/fragmentPreferences"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_below="@+id/fragmentLotParked"
+        android:layout_marginTop="30dp"
+        android:layout_alignLeft="@+id/currentPassTypeName"
+        android:layout_alignStart="@+id/currentPassTypeName"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="Change Pass"
+        android:textSize="10sp"
+        android:id="@+id/changePass"
+        android:layout_below="@id/currentPassTypeName"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true" />
+
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="Change Preferences"
+        android:textSize="10sp"
+        android:id="@+id/changePreferences"
+        android:layout_below="@id/fragmentPreferences"
+        android:layout_marginTop="100dp"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1."
+        android:id="@+id/num1"
+        android:textColor="#000000"
+        android:layout_below="@+id/fragmentPreferences"
+        android:layout_marginLeft="60dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2."
+        android:id="@+id/num2"
+        android:textColor="#000000"
+        android:layout_below="@+id/num1"
+        android:layout_marginLeft="60dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3."
+        android:id="@+id/num3"
+        android:textColor="#000000"
+        android:layout_below="@+id/num2"
+        android:layout_marginLeft="60dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lot A"
+        android:id="@+id/preference1"
+        android:textColor="#000000"
+        android:layout_toRightOf="@+id/num1"
+        android:layout_toEndOf="@+id/num1"
+        android:layout_marginLeft="40dp"
+        android:layout_alignBaseline="@+id/num1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lot B"
+        android:id="@+id/preference2"
+        android:textColor="#000000"
+        android:layout_toRightOf="@+id/num2"
+        android:layout_toEndOf="@+id/num2"
+        android:layout_marginLeft="40dp"
+        android:layout_alignBaseline="@+id/num2"  />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lot C"
+        android:id="@+id/preference3"
+        android:textColor="#000000"
+        android:layout_toRightOf="@+id/num3"
+        android:layout_toEndOf="@+id/num3"
+        android:layout_marginLeft="40dp"
+        android:layout_alignBaseline="@+id/num3"  />
+
+
+</RelativeLayout>

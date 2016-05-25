@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="35dip"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/header"
+        android:src="@drawable/ic_account_circle_white_24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+
+    <!--<ImageButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/profileButton"-->
+        <!--android:layout_marginLeft="40dp"-->
+        <!--android:layout_marginStart="40dp"-->
+        <!--android:src="@drawable/ic_action_name"/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="New Button"-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_toRightOf="@+id/profileButton"-->
+        <!--android:layout_toEndOf="@+id/profileButton"-->
+        <!--android:layout_alignBaseline="@+id/profileButton"/>-->
+
+
+<!--</RelativeLayout>-->

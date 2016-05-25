@@ -9,24 +9,47 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.stanford.parkle.MapActivity">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:id="@+id/logoutButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/mapLayout">
+
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="37dp"
+        android:layout_height="34dp"
+        android:layout_centerHorizontal="true"
+        android:background="#808080"
+        android:id="@+id/preferenceTitleLayout"
+        android:layout_above="@+id/preference1Layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lot"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:id="@+id/parkingLotTitleLot"
+            android:layout_marginLeft="70dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/parkingLotTitleSpaces"
+            android:text="Occupancy"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:layout_marginLeft="90dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
         android:layout_centerHorizontal="true"
         android:background="#0066ff"
         android:id="@+id/preference1Layout"
@@ -40,7 +63,7 @@
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:id="@+id/parkingLotName1"
-            android:layout_marginLeft="55dp"/>
+            android:layout_marginLeft="30dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -50,17 +73,17 @@
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
-            android:layout_marginLeft="20dp" />
+            android:layout_marginLeft="60dp" />
 
     </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="37dp"
+        android:layout_height="34dp"
         android:layout_centerHorizontal="true"
         android:background="#00FF00"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/preference3Layout"
         android:id="@+id/preference2Layout">
 
 
@@ -72,7 +95,7 @@
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:id="@+id/parkingLotName2"
-            android:layout_marginLeft="55dp" />
+            android:layout_marginLeft="30dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -82,7 +105,38 @@
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
-            android:layout_marginLeft="20dp" />
+            android:layout_marginLeft="60dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:layout_centerHorizontal="true"
+        android:background="#FF0000"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/preference3Layout">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preference 3: "
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:id="@+id/parkingLotName3"
+            android:layout_marginLeft="30dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/parkingLotSpaces3"
+            android:text="Num spaces"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:layout_marginLeft="60dp" />
 
     </LinearLayout>
 
