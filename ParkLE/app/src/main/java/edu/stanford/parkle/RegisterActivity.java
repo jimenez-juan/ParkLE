@@ -1,8 +1,11 @@
 package edu.stanford.parkle;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -191,15 +194,23 @@ public class RegisterActivity extends AppCompatActivity implements BluetoothAdap
                             editor.putInt(ParkLE.CAR_STATE_INFO, ParkLE.CAR_NOT_IN_LOT);
                             editor.putString(ParkLE.PASS_TYPE_KEY, passType);
                             editor.putString(ParkLE.MAC_ADDRESS_KEY, regMAC);
+                            editor.putBoolean(ParkLE.WAS_PARKED_KEY, false);
                             editor.commit();
 
-                            mProgress.dismiss();
+                            // Setting Alarm
+                            Intent checkBeaconAlarm = new Intent(getApplicationContext(), BeaconWakefulReceiver.class);
+                            checkBeaconAlarm.setAction(ParkLE.INTENT_ACTION_CHECK_BEACON);
+                            PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(getApplicationContext(), 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
+                            AlarmManager alarms = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                            alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ParkLE.ALARM_INTERVAL_MS, pendingCheckBeaconAlarm);
 
-                            // TODO: START TIMER!!
+                            Log.e("ME202", "Setting alarm");
+                            // Done Setting Alarm
 
                             // launch next activity
                             Intent nextIntent = new Intent(getApplicationContext(), MapActivity.class);
                             startActivity(nextIntent);
+                            mProgress.dismiss();
                             finish();
 
                         }

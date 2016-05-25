@@ -29,6 +29,7 @@ public class FirebaseUpdateService extends Service {
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null) {
+            final String uID = intent.getStringExtra("uID");
             final boolean isParked = intent.getBooleanExtra("isParked", false);
             final String lotName = intent.getStringExtra("lotName");
             final String passType = intent.getStringExtra("passType");
@@ -39,7 +40,7 @@ public class FirebaseUpdateService extends Service {
 
 //        mFirebaseRef.child("users").child(mFirebaseRef.getAuth().getUid()).child("rides")
 //                .setValue(json);
-            mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("isParked?")
+            mFirebaseRef.child("users").child(uID).child("isParked?")
                     .setValue(isParked, new Firebase.CompletionListener() {
                         @Override
                         public void onComplete(FirebaseError error, Firebase ref) {
@@ -62,7 +63,7 @@ public class FirebaseUpdateService extends Service {
                         }
                     });
 
-            mFirebaseRef.child("users").child("-KHb0FTdZ4D3J1OmijHp").child("lotName")
+            mFirebaseRef.child("users").child(uID).child("lotName")
                     .setValue(lotName, new Firebase.CompletionListener() {
                         @Override
                         public void onComplete(FirebaseError error, Firebase ref) {
