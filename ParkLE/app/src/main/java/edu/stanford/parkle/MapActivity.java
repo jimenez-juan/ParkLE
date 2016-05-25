@@ -1,8 +1,10 @@
 package edu.stanford.parkle;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -90,7 +92,7 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
                 if (occupancy >= 100) {
                     pref1Spaces.setText("FULL");
                 } else {
-                    pref1Spaces.setText(String.valueOf(occupancy)+"%");
+                    pref1Spaces.setText(String.valueOf(numAvailable));
                 }
 
             }
@@ -115,11 +117,12 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
 
                 long numAvailable = numSpots - numASpacesInLot - numCSpacesInLot;
                 long occupancy = ((numSpots - numAvailable)*100/numSpots);
+//                long occupancy = ((numSpots - numAvailable)*100/numSpots);
 
                 if (occupancy >= 100) {
                     pref2Spaces.setText("FULL");
                 } else {
-                    pref2Spaces.setText(String.valueOf(occupancy)+"%");
+                    pref2Spaces.setText(String.valueOf(numAvailable));
                 }
 
             }
@@ -147,7 +150,7 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
                 if (occupancy >= 100) {
                     pref3Spaces.setText("FULL");
                 } else {
-                    pref3Spaces.setText(String.valueOf(occupancy)+"%");
+                    pref3Spaces.setText(String.valueOf(numAvailable));
                 }
             }
 
@@ -157,7 +160,7 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
             }
         });
 
-        myRef.child("users").child(ParkLE.sharedPreferences.getString("uidKey",null)).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.child("users").child(ParkLE.sharedPreferences.getString(ParkLE.UID_KEY,null)).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userName = (String) dataSnapshot.getValue();
@@ -194,7 +197,7 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
     }
 
     private void profileMenu () {
-        String passType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE, "C");
+        String passType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE_KEY, "C");
 
         FragmentManager fm = getFragmentManager();
         ProfileDialogFragment profileDialog =  ProfileDialogFragment.newInstance(passType,"Lot A",userName);
@@ -203,10 +206,10 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
 
     public void onComplete(String passType) {
         // update the shared preferences
-        ParkLE.sharedPreferences.edit().putString(ParkLE.PASS_TYPE, passType);
+        ParkLE.sharedPreferences.edit().putString(ParkLE.PASS_TYPE_KEY, passType);
 
         // update firebase
-        myRef.child("users").child(ParkLE.sharedPreferences.getString("uidKey",null)).child("passType").setValue(passType);
+        myRef.child("users").child(ParkLE.sharedPreferences.getString(ParkLE.UID_KEY,null)).child("passType").setValue(passType);
     }
 
     public void onCompletePref(String pref1, String pref2, String pref3) {
@@ -216,39 +219,6 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
         pref3Name.setText(pref3);
     }
 
-//        changePass = (Button) findViewById(R.id.changePass);
-//        changePref = (Button) findViewById(R.id.changePreferences);
-//
-//        changePass.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                AlertDialog changePassDialog = new AlertDialog.Builder(MapActivity.this).create();
-//                RadioGroup changePassRadioGroup = new RadioGroup(MapActivity.this);
-//                changePassDialog.setTitle("Change Pass Type");
-//
-//                LinearLayout layout = new LinearLayout(MapActivity.this);
-//                layout.setOrientation(LinearLayout.HORIZONTAL);
-//
-//
-//                RadioButton RB_A = new RadioButton(MapActivity.this);
-//                RadioButton RB_C = new RadioButton(MapActivity.this);
-//
-//                RB_A.setText("A");
-//                RB_C.setText("C");
-//                changePassRadioGroup.addView(RB_A);
-//                changePassRadioGroup.addView(RB_C);
-//
-//                layout.addView(changePassRadioGroup);
-//                changePassDialog.setView(layout);
-//            }
-//        });
-//
-//        changePref.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
 
     private void logoutMenu () {
         AlertDialog popUpDialog = new AlertDialog.Builder(MapActivity.this).create();
@@ -263,6 +233,14 @@ public class MapActivity extends AppCompatActivity implements ProfileDialogFragm
                 editor.commit();
 
                 FT.remove(MF);
+
+                // Removing the alarm
+                Intent checkBeaconAlarm = new Intent(getApplicationContext(), BeaconWakefulReceiver.class);
+                checkBeaconAlarm.setAction(ParkLE.INTENT_ACTION_CHECK_BEACON);
+                PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(getApplicationContext(), 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager alarms = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                alarms.cancel(pendingCheckBeaconAlarm);
+                // Done Removing the alarm
 
                 // take the user back to the login screen
                 finish();

@@ -52,11 +52,12 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         mAdapter.startLeScan(this);
 
         try {
-            Thread.sleep(ParkLE.SCAN_PERIOD);
+            Thread.sleep(ParkLE.SCAN_PERIOD_MS);
         } catch (Exception e) {
             Log.e("BeaconScanning", "Error in attempt to sleep for scan.");
             restartAlarm(intent);
             BeaconWakefulReceiver.completeWakefulIntent(intent);
+            return;
         }
         if (mDevices.size() > 0) {
             Log.e("Service", "found these devices:");
@@ -66,7 +67,11 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         }
         stopScan();
         updateState();
-        restartAlarm(intent);
+        if (!ParkLE.sharedPreferences.contains(ParkLE.UID_KEY)) { // Don't restart alarm if the user logged out while this thread was running.
+            BeaconWakefulReceiver.completeWakefulIntent(intent);
+        } else {
+            restartAlarm(intent);
+        }
     }
 
     @Override
@@ -83,9 +88,11 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         int currentCarState = ParkLE.sharedPreferences.getInt(ParkLE.CAR_STATE_INFO, ParkLE.CAR_NOT_IN_LOT);
         int currentCarModuleState = ParkLE.NOT_CONNECTED;
         int currentBeaconState = ParkLE.NOT_CONNECTED;
+        String uID = ParkLE.sharedPreferences.getString(ParkLE.UID_KEY,"");
         String currentBeaconAddress = ParkLE.sharedPreferences.getString(ParkLE.BEACON_ADDRESS_INFO, "");
-        String userPassType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE, "C");
-        String userCarModuleMAC = ParkLE.sharedPreferences.getString(ParkLE.MAC_ADDRESS, "E9:40:B9:B9:C0:05"); // TODO: Just return empty string when not testing
+        String userPassType = ParkLE.sharedPreferences.getString(ParkLE.PASS_TYPE_KEY, "");
+        String userCarModuleMAC = ParkLE.sharedPreferences.getString(ParkLE.MAC_ADDRESS_KEY, "");
+        boolean wasParked = ParkLE.sharedPreferences.getBoolean(ParkLE.WAS_PARKED_KEY, false);
 
         // TODO: This might be inefficient and dumb and perhaps should be done in a better way...
         if (currentCarState == ParkLE.CAR_PARKED_IN_LOT) {
@@ -111,22 +118,30 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
             case ParkLE.CAR_NOT_IN_LOT:
                 if ((currentCarModuleState == ParkLE.CONNECTED) && (currentBeaconState == ParkLE.CONNECTED)) {
                     currentCarState = ParkLE.CAR_IDLE_IN_LOT;
+                    wasParked = false;
+                    //updateCloud(uID, true, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
                 }
                 break;
 
             case ParkLE.CAR_IDLE_IN_LOT:
                 if (currentCarModuleState == ParkLE.NOT_CONNECTED) {
                     currentCarState = ParkLE.CAR_PARKED_IN_LOT;
-                    updateCloud(true, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    if (!wasParked) {
+                        updateCloud(uID, true, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    }
                 } else if (currentBeaconState == ParkLE.NOT_CONNECTED) {
                     currentCarState = ParkLE.CAR_NOT_IN_LOT;
+                    if (wasParked) {
+                        updateCloud(uID, false, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    }
                 }
                 break;
 
             case ParkLE.CAR_PARKED_IN_LOT:
                 if (currentCarModuleState == ParkLE.CONNECTED) {
                     currentCarState = ParkLE.CAR_IDLE_IN_LOT;
-                    updateCloud(false, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
+                    wasParked = true;
+                    //updateCloud(uID, false, ParkLE.lotNames.get(currentBeaconAddress), userPassType);
                 }
                 break;
         }
@@ -136,11 +151,13 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         SharedPreferences.Editor editor = ParkLE.sharedPreferences.edit();
         editor.putInt(ParkLE.CAR_STATE_INFO, currentCarState);
         editor.putString(ParkLE.BEACON_ADDRESS_INFO, currentBeaconAddress);
+        editor.putBoolean(ParkLE.WAS_PARKED_KEY, wasParked);
         editor.commit();
     }
 
-    private void updateCloud(final boolean isParked, final String lotName, final String passType) {
+    private void updateCloud(final String uID, final boolean isParked, final String lotName, final String passType) {
         Intent intent = new Intent( this, FirebaseUpdateService.class );
+        intent.putExtra("uID", uID);
         intent.putExtra("isParked", isParked);
         intent.putExtra("lotName", lotName);
         intent.putExtra("passType", passType);
@@ -248,7 +265,7 @@ public class FindBeaconService extends IntentService implements BluetoothAdapter
         checkBeaconAlarm.setAction(ParkLE.INTENT_ACTION_CHECK_BEACON);
         PendingIntent pendingCheckBeaconAlarm = PendingIntent.getBroadcast(this, 0, checkBeaconAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarms = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ParkLE.ALARM_INTERVAL, pendingCheckBeaconAlarm);
+        alarms.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ParkLE.ALARM_INTERVAL_MS, pendingCheckBeaconAlarm);
         BeaconWakefulReceiver.completeWakefulIntent(serviceIntent);
     }
 }
